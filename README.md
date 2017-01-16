@@ -2,6 +2,11 @@
 
 ## Installation
 
+### stable
+Visit [Latest release page](https://github.com/naoty/table/releases/latest) and download a binary.
+
+### master
+
 ```sh
 $ go get github.com/naoty/table
 ```
