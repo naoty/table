@@ -1,4 +1,4 @@
-VERSION ?= $$(git describe --tags --always)
+VERSION ?= $$(git describe --tags)
 
 default: install
 
