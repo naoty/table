@@ -14,6 +14,12 @@ const (
 	ExitCodeError = 10 + iota
 )
 
+// Format option values
+const (
+	FormatOptionASCII    = "ascii"
+	FormatOptionMarkdown = "markdown"
+)
+
 // CLI represents the CLI for this application.
 type CLI struct {
 	inStream             io.Reader
@@ -31,6 +37,10 @@ func (cli *CLI) Run(args []string) int {
 	var header bool
 	flags.BoolVar(&header, "header", false, "Parse the first row as a header")
 	flags.BoolVar(&header, "H", false, "Parse the first row as a header")
+
+	var format string
+	flags.StringVar(&format, "format", "ascii", "Specify how to format a table (ascii|markdown)")
+	flags.StringVar(&format, "f", "ascii", "Specify how to format a table (ascii|markdown)")
 
 	flags.Parse(args[1:])
 
@@ -54,7 +64,14 @@ func (cli *CLI) Run(args []string) int {
 	}
 
 	var drawer Drawer
-	drawer = ASCIIDrawer{}
+	switch format {
+	case FormatOptionASCII:
+		drawer = ASCIIDrawer{}
+	case FormatOptionMarkdown:
+		drawer = MarkdownDrawer{}
+	default:
+		drawer = ASCIIDrawer{}
+	}
 	fmt.Fprintf(cli.outStream, "%v", drawer.Draw(table))
 
 	return ExitCodeOK
