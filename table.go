@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 // Table represents a dataset in a table.
 type Table struct {
@@ -48,41 +45,4 @@ func (table *Table) AppendRow(str string) {
 	}
 
 	table.Rows = append(table.Rows, items)
-}
-
-func (table *Table) String() string {
-	columnWidths := []int{}
-	for _, column := range table.Columns {
-		columnWidths = append(columnWidths, column.Width())
-	}
-
-	buf := []string{}
-
-	buf = append(buf, table.DrawBorder(columnWidths))
-
-	// Header
-	if table.Header != nil {
-		buf = append(buf, table.Header.Draw(columnWidths))
-		buf = append(buf, table.DrawBorder(columnWidths))
-	}
-
-	// Each rows
-	for _, row := range table.Rows {
-		buf = append(buf, row.Draw(columnWidths))
-	}
-
-	buf = append(buf, table.DrawBorder(columnWidths))
-
-	return fmt.Sprintf("%v\n", strings.Join(buf, "\n"))
-}
-
-// DrawBorder makes string represents a border with given column widths.
-func (table *Table) DrawBorder(widths []int) string {
-	buf := []string{}
-
-	for _, width := range widths {
-		buf = append(buf, strings.Repeat("-", width+2))
-	}
-
-	return "+" + strings.Join(buf, "+") + "+"
 }

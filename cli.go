@@ -53,7 +53,9 @@ func (cli *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
-	fmt.Fprintf(cli.outStream, "%v", table)
+	var drawer Drawer
+	drawer = ASCIIDrawer{}
+	fmt.Fprintf(cli.outStream, "%v", drawer.Draw(table))
 
 	return ExitCodeOK
 }
