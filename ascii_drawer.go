@@ -18,26 +18,42 @@ func (drawer ASCIIDrawer) Draw(table *Table) string {
 
 	buf := []string{}
 
-	buf = append(buf, drawer.drawBorder(table, columnWidths))
+	buf = append(buf, drawer.DrawBorder(table, columnWidths))
 
 	// Header
 	if table.Header != nil {
-		buf = append(buf, table.Header.Draw(columnWidths))
-		buf = append(buf, drawer.drawBorder(table, columnWidths))
+		buf = append(buf, drawer.DrawRow(table.Header, columnWidths))
+		buf = append(buf, drawer.DrawBorder(table, columnWidths))
 	}
 
 	// Each rows
 	for _, row := range table.Rows {
-		buf = append(buf, row.Draw(columnWidths))
+		buf = append(buf, drawer.DrawRow(row, columnWidths))
 	}
 
-	buf = append(buf, drawer.drawBorder(table, columnWidths))
+	buf = append(buf, drawer.DrawBorder(table, columnWidths))
 
 	return fmt.Sprintf("%v\n", strings.Join(buf, "\n"))
 }
 
+// DrawRow makes string represents a row with given column widths.
+func (drawer ASCIIDrawer) DrawRow(row Row, widths []int) string {
+	buf := []string{"|"}
+
+	for i, item := range row {
+		buf = append(buf, " ")
+		buf = append(buf, item)
+
+		paddingWidth := widths[i] - lenInHalfSize(item)
+		buf = append(buf, strings.Repeat(" ", paddingWidth))
+		buf = append(buf, " |")
+	}
+
+	return strings.Join(buf, "")
+}
+
 // DrawBorder makes string represents a border with given column widths.
-func (drawer ASCIIDrawer) drawBorder(table *Table, widths []int) string {
+func (drawer ASCIIDrawer) DrawBorder(table *Table, widths []int) string {
 	buf := []string{}
 
 	for _, width := range widths {
