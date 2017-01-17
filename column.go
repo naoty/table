@@ -7,8 +7,9 @@ type Column []string
 func (column Column) Width() int {
 	max := 0
 	for _, item := range column {
-		if len(item) > max {
-			max = len(item)
+		len := lenInHalfSize(item)
+		if len > max {
+			max = len
 		}
 	}
 	return max

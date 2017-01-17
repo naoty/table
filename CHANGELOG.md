@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+### Fixed
+* Fix a bug to correctly count column widths when data includes wide characters
+
 ## 0.1.1 (2017-01-17)
 
 ### Added
