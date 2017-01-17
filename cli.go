@@ -16,8 +16,9 @@ const (
 
 // Format option values
 const (
-	FormatOptionASCII    = "ascii"
-	FormatOptionMarkdown = "markdown"
+	FormatOptionASCII      = "ascii"
+	FormatOptionMarkdown   = "markdown"
+	FormatOptionConfluence = "confluence"
 )
 
 // CLI represents the CLI for this application.
@@ -39,8 +40,8 @@ func (cli *CLI) Run(args []string) int {
 	flags.BoolVar(&header, "H", false, "Parse the first row as a header")
 
 	var format string
-	flags.StringVar(&format, "format", "ascii", "Specify how to format a table (ascii|markdown)")
-	flags.StringVar(&format, "f", "ascii", "Specify how to format a table (ascii|markdown)")
+	flags.StringVar(&format, "format", "ascii", "Specify how to format a table (ascii|markdown|confluence)")
+	flags.StringVar(&format, "f", "ascii", "Specify how to format a table (ascii|markdown|confluence)")
 
 	flags.Parse(args[1:])
 
@@ -69,6 +70,8 @@ func (cli *CLI) Run(args []string) int {
 		drawer = ASCIIDrawer{}
 	case FormatOptionMarkdown:
 		drawer = MarkdownDrawer{}
+	case FormatOptionConfluence:
+		drawer = ConfluenceDrawer{}
 	default:
 		drawer = ASCIIDrawer{}
 	}

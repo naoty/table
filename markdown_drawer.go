@@ -21,7 +21,7 @@ func (drawer MarkdownDrawer) Draw(table *Table) string {
 	// Header
 	if table.Header != nil {
 		buf = append(buf, drawer.DrawRow(table.Header, columnWidths))
-		buf = append(buf, drawer.drawBorder(table, columnWidths))
+		buf = append(buf, drawer.DrawBorder(table, columnWidths))
 	}
 
 	// Each rows
@@ -49,7 +49,7 @@ func (drawer MarkdownDrawer) DrawRow(row Row, widths []int) string {
 }
 
 // DrawBorder makes string represents a border with given column widths.
-func (drawer MarkdownDrawer) drawBorder(table *Table, widths []int) string {
+func (drawer MarkdownDrawer) DrawBorder(table *Table, widths []int) string {
 	buf := []string{}
 
 	for _, width := range widths {
