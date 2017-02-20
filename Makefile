@@ -11,3 +11,6 @@ build:
 
 install:
 	go install -ldflags "-X main.Version=$(VERSION)"
+
+release: build
+	tar czvf table.tar.gz bin
