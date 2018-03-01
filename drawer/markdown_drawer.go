@@ -1,8 +1,11 @@
-package main
+package drawer
 
 import (
 	"fmt"
 	"strings"
+
+	"github.com/naoty/table/table"
+	"github.com/naoty/table/utils"
 )
 
 // MarkdownDrawer is a Drawer to draw tables in markdown format.
@@ -10,7 +13,7 @@ type MarkdownDrawer struct {
 }
 
 // Draw makes a string for a given table in markdown format.
-func (drawer MarkdownDrawer) Draw(table *Table) string {
+func (drawer MarkdownDrawer) Draw(table *table.Table) string {
 	columnWidths := []int{}
 	for _, column := range table.Columns {
 		columnWidths = append(columnWidths, column.Width())
@@ -33,14 +36,14 @@ func (drawer MarkdownDrawer) Draw(table *Table) string {
 }
 
 // DrawRow makes string represents a row with given column widths.
-func (drawer MarkdownDrawer) DrawRow(row Row, widths []int) string {
+func (drawer MarkdownDrawer) DrawRow(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {
 		buf = append(buf, " ")
 		buf = append(buf, item)
 
-		paddingWidth := widths[i] - lenInHalfSize(item)
+		paddingWidth := widths[i] - utils.LenInHalfSize(item)
 		buf = append(buf, strings.Repeat(" ", paddingWidth))
 		buf = append(buf, " |")
 	}
@@ -49,7 +52,7 @@ func (drawer MarkdownDrawer) DrawRow(row Row, widths []int) string {
 }
 
 // DrawBorder makes string represents a border with given column widths.
-func (drawer MarkdownDrawer) DrawBorder(table *Table, widths []int) string {
+func (drawer MarkdownDrawer) DrawBorder(table *table.Table, widths []int) string {
 	buf := []string{}
 
 	for _, width := range widths {

@@ -5,6 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"io"
+
+	d "github.com/naoty/table/drawer"
+	"github.com/naoty/table/table"
 )
 
 // Exit codes represent exit codes for particular situations.
@@ -50,7 +53,7 @@ func (cli *CLI) Run(args []string) int {
 		return ExitCodeOK
 	}
 
-	table := NewTable()
+	table := table.NewTable()
 	scanner := bufio.NewScanner(cli.inStream)
 	for i := 0; scanner.Scan(); i++ {
 		if header && i == 0 {
@@ -64,16 +67,16 @@ func (cli *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
-	var drawer Drawer
+	var drawer d.Drawer
 	switch format {
 	case FormatOptionASCII:
-		drawer = ASCIIDrawer{}
+		drawer = d.ASCIIDrawer{}
 	case FormatOptionMarkdown:
-		drawer = MarkdownDrawer{}
+		drawer = d.MarkdownDrawer{}
 	case FormatOptionConfluence:
-		drawer = ConfluenceDrawer{}
+		drawer = d.ConfluenceDrawer{}
 	default:
-		drawer = ASCIIDrawer{}
+		drawer = d.ASCIIDrawer{}
 	}
 	fmt.Fprintf(cli.outStream, "%v", drawer.Draw(table))
 

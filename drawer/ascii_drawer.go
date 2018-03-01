@@ -1,8 +1,11 @@
-package main
+package drawer
 
 import (
 	"fmt"
 	"strings"
+
+	"github.com/naoty/table/table"
+	"github.com/naoty/table/utils"
 )
 
 // ASCIIDrawer is a Drawer to draw Tables in ASCII format.
@@ -10,7 +13,7 @@ type ASCIIDrawer struct {
 }
 
 // Draw makes a string for a given Table in ASCII format.
-func (drawer ASCIIDrawer) Draw(table *Table) string {
+func (drawer ASCIIDrawer) Draw(table *table.Table) string {
 	columnWidths := []int{}
 	for _, column := range table.Columns {
 		columnWidths = append(columnWidths, column.Width())
@@ -37,14 +40,14 @@ func (drawer ASCIIDrawer) Draw(table *Table) string {
 }
 
 // DrawRow makes string represents a row with given column widths.
-func (drawer ASCIIDrawer) DrawRow(row Row, widths []int) string {
+func (drawer ASCIIDrawer) DrawRow(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {
 		buf = append(buf, " ")
 		buf = append(buf, item)
 
-		paddingWidth := widths[i] - lenInHalfSize(item)
+		paddingWidth := widths[i] - utils.LenInHalfSize(item)
 		buf = append(buf, strings.Repeat(" ", paddingWidth))
 		buf = append(buf, " |")
 	}
@@ -53,7 +56,7 @@ func (drawer ASCIIDrawer) DrawRow(row Row, widths []int) string {
 }
 
 // DrawBorder makes string represents a border with given column widths.
-func (drawer ASCIIDrawer) DrawBorder(table *Table, widths []int) string {
+func (drawer ASCIIDrawer) DrawBorder(table *table.Table, widths []int) string {
 	buf := []string{}
 
 	for _, width := range widths {
