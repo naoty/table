@@ -10,7 +10,7 @@ $ brew install table
 ## Usage
 
 ```sh
-$ echo "2017-01-01\t10000\n2017-01-02\t8000" | table
+$ echo -e "2017-01-01\t10000\n2017-01-02\t8000" | table
 +------------+-------+
 | 2017-01-01 | 10000 |
 | 2017-01-02 | 8000  |
@@ -18,7 +18,7 @@ $ echo "2017-01-01\t10000\n2017-01-02\t8000" | table
 ```
 
 ```sh
-$ echo "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H
+$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H
 +------------+-------+
 | day        | DAU   |
 +------------+-------+
@@ -28,7 +28,7 @@ $ echo "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H
 ```
 
 ```sh
-$ echo "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f=markdown
+$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f=markdown
 | day        | DAU   |
 | ---------- | ----- |
 | 2017-01-01 | 10000 |
@@ -36,7 +36,7 @@ $ echo "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f=markdown
 ```
 
 ```sh
-$ echo "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f=confluence
+$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f=confluence
 ||day        ||DAU   |
 | 2017-01-01 | 10000 |
 | 2017-01-02 | 8000  |
