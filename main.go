@@ -12,6 +12,6 @@ var Version = "0.1.2"
 
 func main() {
 	cli := &CLI{inStream: os.Stdin, outStream: os.Stdout, errStream: os.Stdout}
-	code := cli.Run(os.Args)
+	code := cli.Run(os.Args[1:])
 	os.Exit(code)
 }

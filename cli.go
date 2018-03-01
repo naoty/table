@@ -2,9 +2,9 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/naoty/table/drawers"
 	"github.com/naoty/table/table"
@@ -32,53 +32,69 @@ type CLI struct {
 
 // Run runs commands with given args.
 func (cli *CLI) Run(args []string) int {
-	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
+	var drawer drawers.Drawer = drawers.ASCIIDrawer{}
+	shouldShowHeader := false
 
-	var version bool
-	flags.BoolVar(&version, "version", false, "Print the version of this application")
-	flags.BoolVar(&version, "v", false, "Print the version of this application")
-
-	var header bool
-	flags.BoolVar(&header, "header", false, "Parse the first row as a header")
-	flags.BoolVar(&header, "H", false, "Parse the first row as a header")
-
-	var format string
-	flags.StringVar(&format, "format", "ascii", "Specify how to format a table (ascii|markdown|confluence)")
-	flags.StringVar(&format, "f", "ascii", "Specify how to format a table (ascii|markdown|confluence)")
-
-	flags.Parse(args[1:])
-
-	if version {
-		fmt.Fprintln(cli.outStream, Version)
-		return ExitCodeOK
+	for i, arg := range args {
+		switch arg {
+		case "--format", "-f":
+			if i < len(args)-1 {
+				switch args[i+1] {
+				case FormatOptionASCII:
+					drawer = drawers.ASCIIDrawer{}
+				case FormatOptionMarkdown:
+					drawer = drawers.MarkdownDrawer{}
+				case FormatOptionConfluence:
+					drawer = drawers.ConfluenceDrawer{}
+				default:
+					drawer = drawers.ASCIIDrawer{}
+				}
+			}
+		case "--header", "-H":
+			shouldShowHeader = true
+		case "--help", "-h":
+			fmt.Fprintln(cli.outStream, cli.Help())
+			return ExitCodeOK
+		case "--version", "-v":
+			fmt.Fprintln(cli.outStream, Version)
+			return ExitCodeOK
+		}
 	}
 
 	table := table.NewTable()
 	scanner := bufio.NewScanner(cli.inStream)
 	for i := 0; scanner.Scan(); i++ {
-		if header && i == 0 {
+		if shouldShowHeader && i == 0 {
 			table.AppendHeader(scanner.Text())
 		} else {
 			table.AppendRow(scanner.Text())
 		}
 	}
+
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintf(cli.errStream, "Failed to scan stdin\n")
+		fmt.Fprintln(cli.errStream, err)
 		return ExitCodeError
 	}
 
-	var drawer drawers.Drawer
-	switch format {
-	case FormatOptionASCII:
-		drawer = drawers.ASCIIDrawer{}
-	case FormatOptionMarkdown:
-		drawer = drawers.MarkdownDrawer{}
-	case FormatOptionConfluence:
-		drawer = drawers.ConfluenceDrawer{}
-	default:
-		drawer = drawers.ASCIIDrawer{}
-	}
 	fmt.Fprintf(cli.outStream, "%v", drawer.Draw(table))
-
 	return ExitCodeOK
+}
+
+// Help returns help messages.
+func (cli *CLI) Help() string {
+	indent := strings.Repeat(" ", 2)
+
+	lines := []string{}
+	lines = append(lines, "Usage:")
+	lines = append(lines, fmt.Sprintf("%stable [--header | -H] [--format | -f (ascii|markdown|confluence)]", indent))
+	lines = append(lines, fmt.Sprintf("%stable --help | -h", indent))
+	lines = append(lines, fmt.Sprintf("%stable --version | -v", indent))
+	lines = append(lines, "")
+	lines = append(lines, "Options:")
+	lines = append(lines, fmt.Sprintf("%s--header, -H: Show header", indent))
+	lines = append(lines, fmt.Sprintf("%s--format, -f [ascii|markdown|confluence]: Set format (default: ascii)", indent))
+	lines = append(lines, fmt.Sprintf("%s--help, -h: Show version number", indent))
+	lines = append(lines, fmt.Sprintf("%s--version, -v: Show version number", indent))
+
+	return strings.Join(lines, "\n")
 }
