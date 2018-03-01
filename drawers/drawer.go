@@ -1,4 +1,4 @@
-package drawer
+package drawers
 
 import "github.com/naoty/table/table"
 

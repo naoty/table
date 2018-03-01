@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	d "github.com/naoty/table/drawer"
+	"github.com/naoty/table/drawers"
 	"github.com/naoty/table/table"
 )
 
@@ -67,16 +67,16 @@ func (cli *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
-	var drawer d.Drawer
+	var drawer drawers.Drawer
 	switch format {
 	case FormatOptionASCII:
-		drawer = d.ASCIIDrawer{}
+		drawer = drawers.ASCIIDrawer{}
 	case FormatOptionMarkdown:
-		drawer = d.MarkdownDrawer{}
+		drawer = drawers.MarkdownDrawer{}
 	case FormatOptionConfluence:
-		drawer = d.ConfluenceDrawer{}
+		drawer = drawers.ConfluenceDrawer{}
 	default:
-		drawer = d.ASCIIDrawer{}
+		drawer = drawers.ASCIIDrawer{}
 	}
 	fmt.Fprintf(cli.outStream, "%v", drawer.Draw(table))
 

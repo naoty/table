@@ -1,4 +1,4 @@
-package drawer
+package drawers
 
 import (
 	"fmt"
@@ -8,20 +8,18 @@ import (
 	"github.com/naoty/table/utils"
 )
 
-// ASCIIDrawer is a Drawer to draw Tables in ASCII format.
-type ASCIIDrawer struct {
+// MarkdownDrawer is a Drawer to draw tables in markdown format.
+type MarkdownDrawer struct {
 }
 
-// Draw makes a string for a given Table in ASCII format.
-func (drawer ASCIIDrawer) Draw(table *table.Table) string {
+// Draw makes a string for a given table in markdown format.
+func (drawer MarkdownDrawer) Draw(table *table.Table) string {
 	columnWidths := []int{}
 	for _, column := range table.Columns {
 		columnWidths = append(columnWidths, column.Width())
 	}
 
 	buf := []string{}
-
-	buf = append(buf, drawer.DrawBorder(table, columnWidths))
 
 	// Header
 	if table.Header != nil {
@@ -34,13 +32,11 @@ func (drawer ASCIIDrawer) Draw(table *table.Table) string {
 		buf = append(buf, drawer.DrawRow(row, columnWidths))
 	}
 
-	buf = append(buf, drawer.DrawBorder(table, columnWidths))
-
 	return fmt.Sprintf("%v\n", strings.Join(buf, "\n"))
 }
 
 // DrawRow makes string represents a row with given column widths.
-func (drawer ASCIIDrawer) DrawRow(row table.Row, widths []int) string {
+func (drawer MarkdownDrawer) DrawRow(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {
@@ -56,12 +52,12 @@ func (drawer ASCIIDrawer) DrawRow(row table.Row, widths []int) string {
 }
 
 // DrawBorder makes string represents a border with given column widths.
-func (drawer ASCIIDrawer) DrawBorder(table *table.Table, widths []int) string {
+func (drawer MarkdownDrawer) DrawBorder(table *table.Table, widths []int) string {
 	buf := []string{}
 
 	for _, width := range widths {
-		buf = append(buf, strings.Repeat("-", width+2))
+		buf = append(buf, strings.Repeat("-", width))
 	}
 
-	return "+" + strings.Join(buf, "+") + "+"
+	return "| " + strings.Join(buf, " | ") + " |"
 }
