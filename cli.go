@@ -38,17 +38,21 @@ func (cli *CLI) Run(args []string) int {
 	for i, arg := range args {
 		switch arg {
 		case "--format", "-f":
-			if i < len(args)-1 {
-				switch args[i+1] {
-				case FormatOptionASCII:
-					writer = writers.ASCIIWriter{}
-				case FormatOptionMarkdown:
-					writer = writers.MarkdownWriter{}
-				case FormatOptionConfluence:
-					writer = writers.ConfluenceWriter{}
-				default:
-					writer = writers.ASCIIWriter{}
-				}
+			if i == len(args)-1 {
+				continue
+			}
+
+			_, writerName := parseFormat(arg)
+
+			switch writerName {
+			case FormatOptionASCII:
+				writer = writers.ASCIIWriter{}
+			case FormatOptionMarkdown:
+				writer = writers.MarkdownWriter{}
+			case FormatOptionConfluence:
+				writer = writers.ConfluenceWriter{}
+			default:
+				writer = writers.ASCIIWriter{}
 			}
 		case "--header", "-H":
 			shouldShowHeader = true
@@ -97,4 +101,15 @@ func (cli *CLI) Help() string {
 	lines = append(lines, fmt.Sprintf("%s--version, -v: Show version number", indent))
 
 	return strings.Join(lines, "\n")
+}
+
+func parseFormat(format string) (string, string) {
+	items := strings.Split(format, ":")
+	if len(items) == 0 {
+		return "", ""
+	} else if len(items) == 1 {
+		return "", items[0]
+	} else {
+		return items[0], items[1]
+	}
 }
