@@ -1,7 +1,5 @@
 package table
 
-import "strings"
-
 // Table represents a dataset in a table.
 type Table struct {
 	Header  Row
@@ -18,10 +16,8 @@ func NewTable() *Table {
 }
 
 // AppendHeader parses given string and set it to the header.
-func (table *Table) AppendHeader(str string) {
-	items := strings.Split(str, "\t")
-
-	for i, item := range items {
+func (table *Table) AppendHeader(header Row) {
+	for i, item := range header {
 		if len(table.Columns) > i {
 			table.Columns[i] = append(table.Columns[i], item)
 		} else {
@@ -29,14 +25,12 @@ func (table *Table) AppendHeader(str string) {
 		}
 	}
 
-	table.Header = items
+	table.Header = header
 }
 
 // AppendRow parses given string and appends row into the table.
-func (table *Table) AppendRow(str string) {
-	items := strings.Split(str, "\t")
-
-	for i, item := range items {
+func (table *Table) AppendRow(row Row) {
+	for i, item := range row {
 		if len(table.Columns) > i {
 			table.Columns[i] = append(table.Columns[i], item)
 		} else {
@@ -44,5 +38,5 @@ func (table *Table) AppendRow(str string) {
 		}
 	}
 
-	table.Rows = append(table.Rows, items)
+	table.Rows = append(table.Rows, row)
 }

@@ -6,6 +6,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/naoty/table/readers"
 	"github.com/naoty/table/table"
 	"github.com/naoty/table/writers"
 )
@@ -19,9 +20,10 @@ const (
 
 // Format option values
 const (
-	FormatOptionASCII      = "ascii"
-	FormatOptionMarkdown   = "markdown"
-	FormatOptionConfluence = "confluence"
+	FormatReaderOptionTSV        = "tsv"
+	FormatWriterOptionASCII      = "ascii"
+	FormatWriterOptionMarkdown   = "markdown"
+	FormatWriterOptionConfluence = "confluence"
 )
 
 // CLI represents the CLI for this application.
@@ -32,6 +34,7 @@ type CLI struct {
 
 // Run runs commands with given args.
 func (cli *CLI) Run(args []string) int {
+	var reader readers.Reader = readers.TSVReader{}
 	var writer writers.Writer = writers.ASCIIWriter{}
 	shouldShowHeader := false
 
@@ -42,14 +45,21 @@ func (cli *CLI) Run(args []string) int {
 				continue
 			}
 
-			_, writerName := parseFormat(arg)
+			readerName, writerName := parseFormat(args[i+1])
+
+			switch readerName {
+			case FormatReaderOptionTSV:
+				reader = readers.TSVReader{}
+			default:
+				reader = readers.TSVReader{}
+			}
 
 			switch writerName {
-			case FormatOptionASCII:
+			case FormatWriterOptionASCII:
 				writer = writers.ASCIIWriter{}
-			case FormatOptionMarkdown:
+			case FormatWriterOptionMarkdown:
 				writer = writers.MarkdownWriter{}
-			case FormatOptionConfluence:
+			case FormatWriterOptionConfluence:
 				writer = writers.ConfluenceWriter{}
 			default:
 				writer = writers.ASCIIWriter{}
@@ -69,9 +79,11 @@ func (cli *CLI) Run(args []string) int {
 	scanner := bufio.NewScanner(cli.inStream)
 	for i := 0; scanner.Scan(); i++ {
 		if shouldShowHeader && i == 0 {
-			table.AppendHeader(scanner.Text())
+			header := reader.ReadHeader(scanner.Text())
+			table.AppendHeader(header)
 		} else {
-			table.AppendRow(scanner.Text())
+			row := reader.ReadRow(scanner.Text())
+			table.AppendRow(row)
 		}
 	}
 
