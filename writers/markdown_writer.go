@@ -1,4 +1,4 @@
-package drawers
+package writers
 
 import (
 	"fmt"
@@ -8,12 +8,12 @@ import (
 	"github.com/naoty/table/utils"
 )
 
-// MarkdownDrawer is a Drawer to draw tables in markdown format.
-type MarkdownDrawer struct {
+// MarkdownWriter is a Writer to draw tables in markdown format.
+type MarkdownWriter struct {
 }
 
-// Draw makes a string for a given table in markdown format.
-func (drawer MarkdownDrawer) Draw(table *table.Table) string {
+// Write makes a string for a given table in markdown format.
+func (drawer MarkdownWriter) Write(table *table.Table) string {
 	columnWidths := []int{}
 	for _, column := range table.Columns {
 		columnWidths = append(columnWidths, column.Width())
@@ -23,20 +23,20 @@ func (drawer MarkdownDrawer) Draw(table *table.Table) string {
 
 	// Header
 	if table.Header != nil {
-		buf = append(buf, drawer.DrawRow(table.Header, columnWidths))
-		buf = append(buf, drawer.DrawBorder(table, columnWidths))
+		buf = append(buf, drawer.WriteRow(table.Header, columnWidths))
+		buf = append(buf, drawer.WriteBorder(table, columnWidths))
 	}
 
 	// Each rows
 	for _, row := range table.Rows {
-		buf = append(buf, drawer.DrawRow(row, columnWidths))
+		buf = append(buf, drawer.WriteRow(row, columnWidths))
 	}
 
 	return fmt.Sprintf("%v\n", strings.Join(buf, "\n"))
 }
 
-// DrawRow makes string represents a row with given column widths.
-func (drawer MarkdownDrawer) DrawRow(row table.Row, widths []int) string {
+// WriteRow makes string represents a row with given column widths.
+func (drawer MarkdownWriter) WriteRow(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {
@@ -51,8 +51,8 @@ func (drawer MarkdownDrawer) DrawRow(row table.Row, widths []int) string {
 	return strings.Join(buf, "")
 }
 
-// DrawBorder makes string represents a border with given column widths.
-func (drawer MarkdownDrawer) DrawBorder(table *table.Table, widths []int) string {
+// WriteBorder makes string represents a border with given column widths.
+func (drawer MarkdownWriter) WriteBorder(table *table.Table, widths []int) string {
 	buf := []string{}
 
 	for _, width := range widths {

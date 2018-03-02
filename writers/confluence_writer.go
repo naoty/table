@@ -1,4 +1,4 @@
-package drawers
+package writers
 
 import (
 	"fmt"
@@ -8,12 +8,12 @@ import (
 	"github.com/naoty/table/utils"
 )
 
-// ConfluenceDrawer is a Drawer to draw tables in Confluence Wiki Markup.
-type ConfluenceDrawer struct {
+// ConfluenceWriter is a Writer to draw tables in Confluence Wiki Markup.
+type ConfluenceWriter struct {
 }
 
-// Draw makes a string for a given table in Confluence Wiki Markup.
-func (drawer ConfluenceDrawer) Draw(table *table.Table) string {
+// Write makes a string for a given table in Confluence Wiki Markup.
+func (drawer ConfluenceWriter) Write(table *table.Table) string {
 	columnWidths := []int{}
 	for _, column := range table.Columns {
 		columnWidths = append(columnWidths, column.Width())
@@ -23,19 +23,19 @@ func (drawer ConfluenceDrawer) Draw(table *table.Table) string {
 
 	// Header
 	if table.Header != nil {
-		buf = append(buf, drawer.DrawHeader(table.Header, columnWidths))
+		buf = append(buf, drawer.WriteHeader(table.Header, columnWidths))
 	}
 
 	// Each rows
 	for _, row := range table.Rows {
-		buf = append(buf, drawer.DrawRow(row, columnWidths))
+		buf = append(buf, drawer.WriteRow(row, columnWidths))
 	}
 
 	return fmt.Sprintf("%v\n", strings.Join(buf, "\n"))
 }
 
-// DrawHeader makes a string representing a header with given column widths.
-func (drawer ConfluenceDrawer) DrawHeader(row table.Row, widths []int) string {
+// WriteHeader makes a string representing a header with given column widths.
+func (drawer ConfluenceWriter) WriteHeader(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {
@@ -50,8 +50,8 @@ func (drawer ConfluenceDrawer) DrawHeader(row table.Row, widths []int) string {
 	return strings.Join(buf, "")
 }
 
-// DrawRow makes a string representing a row with given column widths.
-func (drawer ConfluenceDrawer) DrawRow(row table.Row, widths []int) string {
+// WriteRow makes a string representing a row with given column widths.
+func (drawer ConfluenceWriter) WriteRow(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {

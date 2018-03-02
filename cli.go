@@ -6,8 +6,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/naoty/table/drawers"
 	"github.com/naoty/table/table"
+	"github.com/naoty/table/writers"
 )
 
 // Exit codes represent exit codes for particular situations.
@@ -32,7 +32,7 @@ type CLI struct {
 
 // Run runs commands with given args.
 func (cli *CLI) Run(args []string) int {
-	var drawer drawers.Drawer = drawers.ASCIIDrawer{}
+	var writer writers.Writer = writers.ASCIIWriter{}
 	shouldShowHeader := false
 
 	for i, arg := range args {
@@ -41,13 +41,13 @@ func (cli *CLI) Run(args []string) int {
 			if i < len(args)-1 {
 				switch args[i+1] {
 				case FormatOptionASCII:
-					drawer = drawers.ASCIIDrawer{}
+					writer = writers.ASCIIWriter{}
 				case FormatOptionMarkdown:
-					drawer = drawers.MarkdownDrawer{}
+					writer = writers.MarkdownWriter{}
 				case FormatOptionConfluence:
-					drawer = drawers.ConfluenceDrawer{}
+					writer = writers.ConfluenceWriter{}
 				default:
-					drawer = drawers.ASCIIDrawer{}
+					writer = writers.ASCIIWriter{}
 				}
 			}
 		case "--header", "-H":
@@ -76,7 +76,7 @@ func (cli *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
-	fmt.Fprintf(cli.outStream, "%v", drawer.Draw(table))
+	fmt.Fprintf(cli.outStream, "%v", writer.Write(table))
 	return ExitCodeOK
 }
 

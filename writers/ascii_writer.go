@@ -1,4 +1,4 @@
-package drawers
+package writers
 
 import (
 	"fmt"
@@ -8,12 +8,12 @@ import (
 	"github.com/naoty/table/utils"
 )
 
-// ASCIIDrawer is a Drawer to draw Tables in ASCII format.
-type ASCIIDrawer struct {
+// ASCIIWriter is a Writer to draw Tables in ASCII format.
+type ASCIIWriter struct {
 }
 
-// Draw makes a string for a given Table in ASCII format.
-func (drawer ASCIIDrawer) Draw(table *table.Table) string {
+// Write makes a string for a given Table in ASCII format.
+func (drawer ASCIIWriter) Write(table *table.Table) string {
 	columnWidths := []int{}
 	for _, column := range table.Columns {
 		columnWidths = append(columnWidths, column.Width())
@@ -21,26 +21,26 @@ func (drawer ASCIIDrawer) Draw(table *table.Table) string {
 
 	buf := []string{}
 
-	buf = append(buf, drawer.DrawBorder(table, columnWidths))
+	buf = append(buf, drawer.WriteBorder(table, columnWidths))
 
 	// Header
 	if table.Header != nil {
-		buf = append(buf, drawer.DrawRow(table.Header, columnWidths))
-		buf = append(buf, drawer.DrawBorder(table, columnWidths))
+		buf = append(buf, drawer.WriteRow(table.Header, columnWidths))
+		buf = append(buf, drawer.WriteBorder(table, columnWidths))
 	}
 
 	// Each rows
 	for _, row := range table.Rows {
-		buf = append(buf, drawer.DrawRow(row, columnWidths))
+		buf = append(buf, drawer.WriteRow(row, columnWidths))
 	}
 
-	buf = append(buf, drawer.DrawBorder(table, columnWidths))
+	buf = append(buf, drawer.WriteBorder(table, columnWidths))
 
 	return fmt.Sprintf("%v\n", strings.Join(buf, "\n"))
 }
 
-// DrawRow makes string represents a row with given column widths.
-func (drawer ASCIIDrawer) DrawRow(row table.Row, widths []int) string {
+// WriteRow makes string represents a row with given column widths.
+func (drawer ASCIIWriter) WriteRow(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {
@@ -55,8 +55,8 @@ func (drawer ASCIIDrawer) DrawRow(row table.Row, widths []int) string {
 	return strings.Join(buf, "")
 }
 
-// DrawBorder makes string represents a border with given column widths.
-func (drawer ASCIIDrawer) DrawBorder(table *table.Table, widths []int) string {
+// WriteBorder makes string represents a border with given column widths.
+func (drawer ASCIIWriter) WriteBorder(table *table.Table, widths []int) string {
 	buf := []string{}
 
 	for _, width := range widths {
