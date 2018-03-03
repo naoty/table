@@ -13,7 +13,7 @@ type ConfluenceWriter struct {
 }
 
 // Write makes a string for a given table in Confluence Wiki Markup.
-func (drawer ConfluenceWriter) Write(table *table.Table) string {
+func (writer ConfluenceWriter) Write(table *table.Table) string {
 	columnWidths := []int{}
 	for _, column := range table.Columns {
 		columnWidths = append(columnWidths, column.Width())
@@ -23,19 +23,19 @@ func (drawer ConfluenceWriter) Write(table *table.Table) string {
 
 	// Header
 	if table.Header != nil {
-		buf = append(buf, drawer.WriteHeader(table.Header, columnWidths))
+		buf = append(buf, writer.WriteHeader(table.Header, columnWidths))
 	}
 
 	// Each rows
 	for _, row := range table.Rows {
-		buf = append(buf, drawer.WriteRow(row, columnWidths))
+		buf = append(buf, writer.WriteRow(row, columnWidths))
 	}
 
 	return fmt.Sprintf("%v\n", strings.Join(buf, "\n"))
 }
 
 // WriteHeader makes a string representing a header with given column widths.
-func (drawer ConfluenceWriter) WriteHeader(row table.Row, widths []int) string {
+func (writer ConfluenceWriter) WriteHeader(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {
@@ -51,7 +51,7 @@ func (drawer ConfluenceWriter) WriteHeader(row table.Row, widths []int) string {
 }
 
 // WriteRow makes a string representing a row with given column widths.
-func (drawer ConfluenceWriter) WriteRow(row table.Row, widths []int) string {
+func (writer ConfluenceWriter) WriteRow(row table.Row, widths []int) string {
 	buf := []string{"|"}
 
 	for i, item := range row {
