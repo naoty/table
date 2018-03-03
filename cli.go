@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"strings"
 
 	"github.com/naoty/table/readers"
-	"github.com/naoty/table/table"
 	"github.com/naoty/table/writers"
 )
 
@@ -34,9 +32,9 @@ type CLI struct {
 
 // Run runs commands with given args.
 func (cli *CLI) Run(args []string) int {
-	var reader readers.Reader = readers.TSVReader{}
+	var reader readers.Reader = readers.TSVReader{Reader: cli.inStream}
 	var writer writers.Writer = writers.ASCIIWriter{}
-	shouldShowHeader := false
+	header := false
 
 	for i, arg := range args {
 		switch arg {
@@ -49,9 +47,9 @@ func (cli *CLI) Run(args []string) int {
 
 			switch readerName {
 			case FormatReaderOptionTSV:
-				reader = readers.TSVReader{}
+				reader = readers.TSVReader{Reader: cli.inStream}
 			default:
-				reader = readers.TSVReader{}
+				reader = readers.TSVReader{Reader: cli.inStream}
 			}
 
 			switch writerName {
@@ -65,7 +63,7 @@ func (cli *CLI) Run(args []string) int {
 				writer = writers.ASCIIWriter{}
 			}
 		case "--header", "-H":
-			shouldShowHeader = true
+			header = true
 		case "--help", "-h":
 			fmt.Fprintln(cli.outStream, cli.Help())
 			return ExitCodeOK
@@ -75,19 +73,8 @@ func (cli *CLI) Run(args []string) int {
 		}
 	}
 
-	table := table.NewTable()
-	scanner := bufio.NewScanner(cli.inStream)
-	for i := 0; scanner.Scan(); i++ {
-		if shouldShowHeader && i == 0 {
-			header := reader.ReadHeader(scanner.Text())
-			table.AppendHeader(header)
-		} else {
-			row := reader.ReadRow(scanner.Text())
-			table.AppendRow(row)
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
+	table, err := reader.ReadTable(header)
+	if err != nil {
 		fmt.Fprintln(cli.errStream, err)
 		return ExitCodeError
 	}
