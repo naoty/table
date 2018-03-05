@@ -22,17 +22,17 @@ func (reader TSVReader) ReadTable(header bool) (*table.Table, error) {
 		return nil, err
 	}
 
-	table := table.NewTable()
+	t := table.NewTable()
 
 	if header {
-		table.AppendHeader(records[0])
+		t.AppendHeader(records[0])
 	} else {
-		table.AppendRow(records[0])
+		t.AppendRow(records[0])
 	}
 
 	for _, record := range records[1:] {
-		table.AppendRow(record)
+		t.AppendRow(record)
 	}
 
-	return table, nil
+	return t, nil
 }
