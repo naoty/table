@@ -7,7 +7,9 @@ $ brew tap naoty/misc
 $ brew install table
 ```
 
-## Usage
+## Input Format
+
+### TSV
 
 ```sh
 $ echo -e "2017-01-01\t10000\n2017-01-02\t8000" | table
@@ -16,6 +18,8 @@ $ echo -e "2017-01-01\t10000\n2017-01-02\t8000" | table
 | 2017-01-02 | 8000  |
 +------------+-------+
 ```
+
+`-H` or `--header` option adds headers to the table.
 
 ```sh
 $ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H
@@ -27,16 +31,46 @@ $ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H
 +------------+-------+
 ```
 
+### JSON
+
 ```sh
-$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f=markdown
+$ echo '[{"id":1,"name":"bulbasaur"},{"id":2,"name":"ivysaur"}]' | table -f json:ascii
++----+-----------+
+| id | name      |
++----+-----------+
+| 1  | bulbasaur |
+| 2  | ivysaur   |
++----+-----------+
+```
+
+## Output Format
+
+### ASCII
+
+```sh
+$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f tsv:ascii
++------------+-------+
+| day        | DAU   |
++------------+-------+
+| 2017-01-01 | 10000 |
+| 2017-01-02 | 8000  |
++------------+-------+
+```
+
+### Markdown
+
+```sh
+$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f tsv:markdown
 | day        | DAU   |
 | ---------- | ----- |
 | 2017-01-01 | 10000 |
 | 2017-01-02 | 8000  |
 ```
 
+### Confluence
+
 ```sh
-$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f=confluence
+$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f tsv:confluence
 ||day        ||DAU   |
 | 2017-01-01 | 10000 |
 | 2017-01-02 | 8000  |
