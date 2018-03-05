@@ -19,6 +19,7 @@ const (
 // Format option values
 const (
 	FormatReaderOptionTSV        = "tsv"
+	FormatReaderOptionJSON       = "json"
 	FormatWriterOptionASCII      = "ascii"
 	FormatWriterOptionMarkdown   = "markdown"
 	FormatWriterOptionConfluence = "confluence"
@@ -48,6 +49,8 @@ func (cli *CLI) Run(args []string) int {
 			switch readerName {
 			case FormatReaderOptionTSV:
 				reader = readers.TSVReader{Reader: cli.inStream}
+			case FormatReaderOptionJSON:
+				reader = readers.JSONReader{Reader: cli.inStream}
 			default:
 				reader = readers.TSVReader{Reader: cli.inStream}
 			}
@@ -89,13 +92,13 @@ func (cli *CLI) Help() string {
 
 	lines := []string{}
 	lines = append(lines, "Usage:")
-	lines = append(lines, fmt.Sprintf("%stable [--header | -H] [--format | -f (ascii|markdown|confluence)]", indent))
+	lines = append(lines, fmt.Sprintf("%stable [--header | -H] [--format | -f (tsv|json):(ascii|markdown|confluence)]", indent))
 	lines = append(lines, fmt.Sprintf("%stable --help | -h", indent))
 	lines = append(lines, fmt.Sprintf("%stable --version | -v", indent))
 	lines = append(lines, "")
 	lines = append(lines, "Options:")
 	lines = append(lines, fmt.Sprintf("%s--header, -H: Show header", indent))
-	lines = append(lines, fmt.Sprintf("%s--format, -f [ascii|markdown|confluence]: Set format (default: ascii)", indent))
+	lines = append(lines, fmt.Sprintf("%s--format, -f [tsv|json]:[ascii|markdown|confluence]: Set format (default: tsv:ascii)", indent))
 	lines = append(lines, fmt.Sprintf("%s--help, -h: Show version number", indent))
 	lines = append(lines, fmt.Sprintf("%s--version, -v: Show version number", indent))
 
