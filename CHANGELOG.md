@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.0 (2017-03-05)
+
+### Added
+* Support json as input format.
+
 ## 0.1.2 (2017-02-20)
 
 ### Fixed
