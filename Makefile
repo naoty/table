@@ -14,3 +14,4 @@ install:
 
 release: build
 	tar czvf table.tar.gz bin
+	shasum -a 256 table.tar.gz | cut -d ' ' -f 1
