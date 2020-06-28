@@ -1,4 +1,6 @@
+use csv;
 use std::env;
+use std::io;
 use std::process;
 
 const HELP_MESSAGE: &str = r#"
@@ -30,5 +32,29 @@ fn main() {
             }
             _ => println!("TODO: implement other flags"),
         }
+    }
+
+    start();
+}
+
+fn start() {
+    let mut reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .has_headers(false)
+        .from_reader(io::stdin());
+
+    for result in reader.records() {
+        if let Err(error) = result {
+            println!("failed to read TSV: {}", error);
+            process::exit(1);
+        }
+
+        let record = result.unwrap();
+
+        for field in record.iter() {
+            print!("| {} ", field);
+        }
+
+        print!("|\n");
     }
 }
