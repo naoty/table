@@ -13,7 +13,11 @@ Options:
 const VERSION: &str = "0.3.0";
 
 fn main() {
-    for arg in env::args() {
+    for (i, arg) in env::args().enumerate() {
+        if i == 0 {
+            continue;
+        }
+
         match &*arg {
             "-h" | "--help" => println!("{}", HELP_MESSAGE.trim()),
             "-v" | "--version" => println!("{}", VERSION),
