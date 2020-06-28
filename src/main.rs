@@ -1,4 +1,5 @@
 use std::env;
+use std::process;
 
 const HELP_MESSAGE: &str = r#"
 Usage:
@@ -19,8 +20,14 @@ fn main() {
         }
 
         match &*arg {
-            "-h" | "--help" => println!("{}", HELP_MESSAGE.trim()),
-            "-v" | "--version" => println!("{}", VERSION),
+            "-h" | "--help" => {
+                println!("{}", HELP_MESSAGE.trim());
+                process::exit(0);
+            }
+            "-v" | "--version" => {
+                println!("{}", VERSION);
+                process::exit(0);
+            }
             _ => println!("TODO: implement other flags"),
         }
     }
