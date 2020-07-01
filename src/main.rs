@@ -1,7 +1,10 @@
 use csv;
+use io::Write;
 use std::env;
 use std::io;
 use std::process;
+
+mod ascii_table_writer;
 
 const HELP_MESSAGE: &str = r#"
 Usage:
@@ -34,14 +37,19 @@ fn main() {
         }
     }
 
-    start();
+    if let Err(error) = start() {
+        println!("{}", error);
+        process::exit(0);
+    }
 }
 
-fn start() {
+fn start() -> io::Result<()> {
     let mut reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .has_headers(false)
         .from_reader(io::stdin());
+
+    let mut writer = ascii_table_writer::new(io::stdout());
 
     for result in reader.records() {
         if let Err(error) = result {
@@ -52,9 +60,11 @@ fn start() {
         let record = result.unwrap();
 
         for field in record.iter() {
-            print!("| {} ", field);
+            writer.write(field.as_bytes())?;
         }
 
-        print!("|\n");
+        writer.write(b"\n")?;
     }
+
+    writer.flush()
 }
