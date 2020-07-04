@@ -1,4 +1,5 @@
 use std::io;
+use unicode_width::UnicodeWidthStr;
 
 pub struct AsciiTableWriter<T: io::Write> {
   inner_writer: T,
@@ -19,12 +20,12 @@ impl<T: io::Write> AsciiTableWriter<T> {
       .first()
       .unwrap_or(&vec![])
       .iter()
-      .map(|field| field.len())
+      .map(|field| UnicodeWidthStr::width(field as &str))
       .collect();
 
     for record in self.records.iter() {
       for (i, field) in record.iter().enumerate() {
-        widths[i] = widths[i].max(field.len());
+        widths[i] = widths[i].max(UnicodeWidthStr::width(field as &str));
       }
     }
 
@@ -64,7 +65,7 @@ impl<T: io::Write> io::Write for AsciiTableWriter<T> {
     for record in self.records.iter() {
       for (i, field) in record.iter().enumerate() {
         let column_width = column_widths[i];
-        let spaces = " ".repeat(column_width - field.len());
+        let spaces = " ".repeat(column_width - UnicodeWidthStr::width(field as &str));
         let cell = format!("| {field}{spaces} ", field = field, spaces = spaces);
         self.inner_writer.write(cell.as_bytes())?;
       }
