@@ -12,6 +12,26 @@ pub fn new<T: io::Write>(writer: T) -> AsciiTableWriter<T> {
   }
 }
 
+impl<T: io::Write> AsciiTableWriter<T> {
+  fn column_widths(&self) -> Vec<usize> {
+    let mut widths: Vec<usize> = self
+      .records
+      .first()
+      .unwrap_or(&vec![])
+      .iter()
+      .map(|field| field.len())
+      .collect();
+
+    for record in self.records.iter() {
+      for (i, field) in record.iter().enumerate() {
+        widths[i] = widths[i].max(field.len());
+      }
+    }
+
+    widths
+  }
+}
+
 impl<T: io::Write> io::Write for AsciiTableWriter<T> {
   fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
     let field = String::from_utf8(buf.to_vec());
@@ -31,18 +51,28 @@ impl<T: io::Write> io::Write for AsciiTableWriter<T> {
       let _ = self.records.pop();
     }
 
-    self.inner_writer.write(b"+------------+\n")?;
+    let column_widths = self.column_widths();
 
-    for record in &self.records {
-      for field in record {
-        let cell = format!("| {} ", field);
+    let mut border = String::from("");
+    for width in column_widths.iter() {
+      border += &format!("+-{}-", "-".repeat(*width));
+    }
+    border += "+\n";
+
+    self.inner_writer.write(border.as_bytes())?;
+
+    for record in self.records.iter() {
+      for (i, field) in record.iter().enumerate() {
+        let column_width = column_widths[i];
+        let spaces = " ".repeat(column_width - field.len());
+        let cell = format!("| {field}{spaces} ", field = field, spaces = spaces);
         self.inner_writer.write(cell.as_bytes())?;
       }
 
       self.inner_writer.write(b"|\n")?;
     }
 
-    self.inner_writer.write(b"+------------+\n")?;
+    self.inner_writer.write(border.as_bytes())?;
     self.inner_writer.flush()
   }
 }
