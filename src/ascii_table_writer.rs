@@ -77,3 +77,50 @@ impl<T: io::Write> io::Write for AsciiTableWriter<T> {
     self.inner_writer.flush()
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use io::Write;
+  use std::io;
+
+  #[test]
+  fn column_widths() {
+    struct TestCase<'a> {
+      fields: Vec<&'a [u8]>,
+      expected: Vec<usize>,
+    }
+
+    let test_cases = vec![
+      TestCase {
+        fields: vec![b"alice", b"80", b"\n", b"bob", b"100"],
+        expected: vec![5, 3],
+      },
+      TestCase {
+        fields: vec![b"alice", b"80", b"90", b"\n", b"bob", b"100", b"0"],
+        expected: vec![5, 3, 2],
+      },
+      TestCase {
+        fields: vec![
+          b"alice",
+          b"80",
+          b"\n",
+          "ボブ".as_bytes(),
+          "100点".as_bytes(),
+          b"\n",
+        ],
+        expected: vec![5, 5],
+      },
+    ];
+
+    for test_case in test_cases {
+      let mut writer = new(io::sink());
+
+      for field in test_case.fields {
+        writer.write(field).expect("failed to write");
+      }
+
+      assert_eq!(test_case.expected, writer.column_widths());
+    }
+  }
+}
