@@ -4,12 +4,14 @@ use unicode_width::UnicodeWidthStr;
 pub struct AsciiTableWriter<T: io::Write> {
   inner_writer: T,
   records: Vec<Vec<String>>,
+  has_headers: bool,
 }
 
-pub fn new<T: io::Write>(writer: T) -> AsciiTableWriter<T> {
+pub fn new<T: io::Write>(writer: T, has_headers: bool) -> AsciiTableWriter<T> {
   AsciiTableWriter {
     inner_writer: writer,
     records: vec![vec![]],
+    has_headers,
   }
 }
 
@@ -62,15 +64,19 @@ impl<T: io::Write> io::Write for AsciiTableWriter<T> {
 
     self.inner_writer.write(border.as_bytes())?;
 
-    for record in self.records.iter() {
-      for (i, field) in record.iter().enumerate() {
-        let column_width = column_widths[i];
+    for (i, record) in self.records.iter().enumerate() {
+      for (j, field) in record.iter().enumerate() {
+        let column_width = column_widths[j];
         let spaces = " ".repeat(column_width - UnicodeWidthStr::width(field as &str));
         let cell = format!("| {field}{spaces} ", field = field, spaces = spaces);
         self.inner_writer.write(cell.as_bytes())?;
       }
 
       self.inner_writer.write(b"|\n")?;
+
+      if self.has_headers && i == 0 {
+        self.inner_writer.write(border.as_bytes())?;
+      }
     }
 
     self.inner_writer.write(border.as_bytes())?;
