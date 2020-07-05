@@ -32,12 +32,12 @@ fn main() {
                 println!("{}", VERSION);
                 process::exit(0);
             }
-            _ => println!("TODO: implement other flags"),
+            _ => eprintln!("TODO: implement other flags"),
         }
     }
 
     if let Err(error) = start() {
-        println!("{}", error);
+        eprintln!("{}", error);
         process::exit(0);
     }
 }
@@ -52,7 +52,7 @@ fn start() -> io::Result<()> {
 
     for result in reader.records() {
         if let Err(error) = result {
-            println!("failed to read TSV: {}", error);
+            eprintln!("failed to read TSV: {}", error);
             process::exit(1);
         }
 
