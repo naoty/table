@@ -7,12 +7,20 @@ use table::ascii_table_writer;
 
 const VERSION: &str = "0.3.0";
 const DESCRIPTION: &str = "A command to print ASCII table from stdin";
+const USAGE_TEMPLATE: &str = r#"
+Usage:
+    {usage}
+
+Flags:
+{flags}
+"#;
 
 fn main() {
     let matches = App::new("table")
         .version(VERSION)
         .author("Naoto Kaneko <naoty.k@gmail.com>")
         .about(DESCRIPTION)
+        .template(USAGE_TEMPLATE.trim())
         .version_short("v")
         .arg(
             Arg::with_name("has_headers")
