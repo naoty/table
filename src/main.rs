@@ -1,51 +1,30 @@
+use clap::{App, Arg};
 use csv;
 use io::Write;
-use std::env;
 use std::io;
 use std::process;
 use table::ascii_table_writer;
 
-const HELP_MESSAGE: &str = r#"
-Usage:
-  table (-H | --header)
-  table -h | --help
-  table -v | --version
-
-Options:
-  -h --help     Print help message
-  -H --header   Print table with headers
-  -v --version  Print version
-"#;
-
 const VERSION: &str = "0.3.0";
+const DESCRIPTION: &str = "A command to print ASCII table from stdin";
 
 fn main() {
-    let mut has_headers = false;
+    let matches = App::new("table")
+        .version(VERSION)
+        .author("Naoto Kaneko <naoty.k@gmail.com>")
+        .about(DESCRIPTION)
+        .version_short("v")
+        .arg(
+            Arg::with_name("has_headers")
+                .short("H")
+                .long("header")
+                .help("Prints table with headers"),
+        )
+        .get_matches();
 
-    for (i, arg) in env::args().enumerate() {
-        if i == 0 {
-            continue;
-        }
-
-        match &*arg {
-            "-h" | "--help" => {
-                println!("{}", HELP_MESSAGE.trim());
-                process::exit(0);
-            }
-            "-v" | "--version" => {
-                println!("{}", VERSION);
-                process::exit(0);
-            }
-            "-H" | "--header" => {
-                has_headers = true;
-            }
-            _ => eprintln!("TODO: implement other flags"),
-        }
-    }
-
-    if let Err(error) = start(has_headers) {
+    if let Err(error) = start(matches.is_present("has_headers")) {
         eprintln!("{}", error);
-        process::exit(0);
+        process::exit(1);
     }
 }
 
