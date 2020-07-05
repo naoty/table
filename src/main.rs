@@ -3,8 +3,7 @@ use io::Write;
 use std::env;
 use std::io;
 use std::process;
-
-mod ascii_table_writer;
+use table::ascii_table_writer;
 
 const HELP_MESSAGE: &str = r#"
 Usage:
