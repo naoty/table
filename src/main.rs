@@ -1,11 +1,10 @@
-use clap::{App, Arg};
+use clap::{crate_version, App, Arg};
 use csv;
 use io::Write;
 use std::io;
 use std::process;
 use table::ascii_table_writer;
 
-const VERSION: &str = "0.3.0";
 const DESCRIPTION: &str = "A command to print ASCII table from stdin";
 const USAGE_TEMPLATE: &str = r#"
 Usage:
@@ -17,7 +16,7 @@ Flags:
 
 fn main() {
     let matches = App::new("table")
-        .version(VERSION)
+        .version(crate_version!())
         .author("Naoto Kaneko <naoty.k@gmail.com>")
         .about(DESCRIPTION)
         .template(USAGE_TEMPLATE.trim())
