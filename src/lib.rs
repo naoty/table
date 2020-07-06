@@ -1,1 +1,1 @@
-pub mod ascii_table_writer;
+pub mod ascii_writer;

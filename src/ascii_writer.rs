@@ -1,21 +1,21 @@
 use std::io;
 use unicode_width::UnicodeWidthStr;
 
-pub struct AsciiTableWriter<T: io::Write> {
+pub struct AsciiWriter<T: io::Write> {
   inner_writer: T,
   records: Vec<Vec<String>>,
   has_headers: bool,
 }
 
-pub fn new<T: io::Write>(writer: T, has_headers: bool) -> AsciiTableWriter<T> {
-  AsciiTableWriter {
+pub fn new<T: io::Write>(writer: T, has_headers: bool) -> AsciiWriter<T> {
+  AsciiWriter {
     inner_writer: writer,
     records: vec![vec![]],
     has_headers,
   }
 }
 
-impl<T: io::Write> AsciiTableWriter<T> {
+impl<T: io::Write> AsciiWriter<T> {
   fn column_widths(&self) -> Vec<usize> {
     let mut widths: Vec<usize> = self
       .records
@@ -35,7 +35,7 @@ impl<T: io::Write> AsciiTableWriter<T> {
   }
 }
 
-impl<T: io::Write> io::Write for AsciiTableWriter<T> {
+impl<T: io::Write> io::Write for AsciiWriter<T> {
   fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
     let field = String::from_utf8(buf.to_vec());
     let field = field.map_err(|_| io::Error::from(io::ErrorKind::InvalidData))?;
