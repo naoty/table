@@ -3,7 +3,7 @@ use csv;
 use io::Write;
 use std::io;
 use std::process;
-use table::ascii_writer;
+use table;
 
 const DESCRIPTION: &str = "A command to print ASCII table from stdin";
 const USAGE_TEMPLATE: &str = r#"
@@ -41,7 +41,8 @@ fn start(has_headers: bool) -> io::Result<()> {
         .has_headers(false)
         .from_reader(io::stdin());
 
-    let mut writer = ascii_writer::new(io::stdout(), has_headers);
+    // let mut writer = ascii_writer::new(io::stdout(), has_headers);
+    let mut writer = table::markdown_writer::new(io::stdout());
 
     for result in reader.records() {
         match result {
