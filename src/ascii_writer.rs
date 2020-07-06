@@ -2,16 +2,16 @@ use std::io;
 use unicode_width::UnicodeWidthStr;
 
 pub struct AsciiWriter<T: io::Write> {
-  inner_writer: T,
+  writer: T,
   records: Vec<Vec<String>>,
   has_headers: bool,
 }
 
 pub fn new<T: io::Write>(writer: T, has_headers: bool) -> AsciiWriter<T> {
   AsciiWriter {
-    inner_writer: writer,
-    records: vec![vec![]],
+    writer,
     has_headers,
+    records: vec![vec![]],
   }
 }
 
@@ -62,25 +62,25 @@ impl<T: io::Write> io::Write for AsciiWriter<T> {
     }
     border += "+\n";
 
-    self.inner_writer.write(border.as_bytes())?;
+    self.writer.write(border.as_bytes())?;
 
     for (i, record) in self.records.iter().enumerate() {
       for (j, field) in record.iter().enumerate() {
         let column_width = column_widths[j];
         let spaces = " ".repeat(column_width - UnicodeWidthStr::width(field as &str));
         let cell = format!("| {field}{spaces} ", field = field, spaces = spaces);
-        self.inner_writer.write(cell.as_bytes())?;
+        self.writer.write(cell.as_bytes())?;
       }
 
-      self.inner_writer.write(b"|\n")?;
+      self.writer.write(b"|\n")?;
 
       if self.has_headers && i == 0 {
-        self.inner_writer.write(border.as_bytes())?;
+        self.writer.write(border.as_bytes())?;
       }
     }
 
-    self.inner_writer.write(border.as_bytes())?;
-    self.inner_writer.flush()
+    self.writer.write(border.as_bytes())?;
+    self.writer.flush()
   }
 }
 
