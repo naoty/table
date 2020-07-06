@@ -22,14 +22,14 @@ fn main() {
         .template(USAGE_TEMPLATE.trim())
         .version_short("v")
         .arg(
-            Arg::with_name("has_headers")
+            Arg::with_name("header")
                 .short("H")
                 .long("header")
                 .help("Prints table with headers"),
         )
         .get_matches();
 
-    if let Err(error) = start(matches.is_present("has_headers")) {
+    if let Err(error) = start(matches.is_present("header")) {
         eprintln!("{}", error);
         process::exit(1);
     }
@@ -44,18 +44,18 @@ fn start(has_headers: bool) -> io::Result<()> {
     let mut writer = ascii_table_writer::new(io::stdout(), has_headers);
 
     for result in reader.records() {
-        if let Err(error) = result {
-            eprintln!("failed to read TSV: {}", error);
-            process::exit(1);
+        match result {
+            Ok(record) => {
+                for field in record.iter() {
+                    writer.write(field.as_bytes())?;
+                }
+                writer.write(b"\n")?;
+            }
+            Err(error) => {
+                eprintln!("failed to read record: {}", error);
+                process::exit(1);
+            }
         }
-
-        let record = result.unwrap();
-
-        for field in record.iter() {
-            writer.write(field.as_bytes())?;
-        }
-
-        writer.write(b"\n")?;
     }
 
     writer.flush()
