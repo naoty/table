@@ -120,7 +120,7 @@ mod tests {
     ];
 
     for test_case in test_cases {
-      let mut writer = new(io::sink());
+      let mut writer = new(io::sink(), false);
 
       for field in test_case.fields {
         writer.write(field).expect("failed to write");
