@@ -1,6 +1,5 @@
 use unicode_width::UnicodeWidthStr;
 
-pub mod ascii_writer;
 pub mod markdown_writer;
 pub mod reader;
 pub mod writer;
@@ -51,6 +50,20 @@ pub struct Error {
   kind: ErrorKind,
 }
 
+impl Error {
+  pub fn read() -> Error {
+    Error {
+      kind: ErrorKind::Read,
+    }
+  }
+
+  pub fn write() -> Error {
+    Error {
+      kind: ErrorKind::Write,
+    }
+  }
+}
+
 #[derive(Debug)]
 pub enum ErrorKind {
   Read,
@@ -62,7 +75,8 @@ pub trait Read {
 }
 
 pub trait Write {
-  fn write(&self, table: Table) -> Result<(), Error>;
+  fn write(&mut self, table: Table) -> Result<(), Error>;
+  fn flush(&mut self) -> Result<(), Error>;
 }
 
 mod tests {
