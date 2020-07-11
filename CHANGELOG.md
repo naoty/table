@@ -1,5 +1,19 @@
 # Change Log
 
+## Unreleased
+
+## 0.3.0 (2020-07-11)
+
+### Added
+* Add csv reader.
+
+### Changed
+* Rewrite codes from scratch in Rust.
+
+### Removed
+* Remove json reader.
+* Remove confluence writer.
+
 ## 0.2.0 (2017-03-05)
 
 ### Added
