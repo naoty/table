@@ -31,10 +31,10 @@ $ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H
 +------------+-------+
 ```
 
-### JSON
+### CSV
 
 ```sh
-$ echo '[{"id":1,"name":"bulbasaur"},{"id":2,"name":"ivysaur"}]' | table -f json:ascii
+$ echo -e "2017-01-01,10000\n2017-01-02,8000" | table
 +----+-----------+
 | id | name      |
 +----+-----------+
@@ -63,15 +63,6 @@ $ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f tsv:asci
 $ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f tsv:markdown
 | day        | DAU   |
 | ---------- | ----- |
-| 2017-01-01 | 10000 |
-| 2017-01-02 | 8000  |
-```
-
-### Confluence
-
-```sh
-$ echo -e "day\tDAU\n2017-01-01\t10000\n2017-01-02\t8000" | table -H -f tsv:confluence
-||day        ||DAU   |
 | 2017-01-01 | 10000 |
 | 2017-01-02 | 8000  |
 ```
