@@ -50,7 +50,9 @@ fn main() {
     };
 
     let mut ascii_writer = writer::AsciiWriter::new(io::stdout());
+    let mut markdown_writer = writer::MarkdownWriter::new(io::stdout());
     let writer: &mut dyn table::Write = match tokens.next() {
+        Some("markdown") => &mut markdown_writer,
         _ => &mut ascii_writer,
     };
 

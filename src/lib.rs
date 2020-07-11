@@ -1,6 +1,5 @@
 use unicode_width::UnicodeWidthStr;
 
-pub mod markdown_writer;
 pub mod reader;
 pub mod writer;
 
