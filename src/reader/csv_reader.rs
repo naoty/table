@@ -40,7 +40,9 @@ impl<T: io::Read> crate::Read for CsvReader<T> {
 }
 
 mod tests {
+  #[allow(unused)]
   use super::*;
+  #[allow(unused)]
   use crate::Read;
 
   #[test]
