@@ -39,9 +39,21 @@ fn main() {
         )
         .get_matches();
 
-    let reader: &mut dyn table::Read =
-        &mut reader::CsvReader::new(io::stdin(), b',', matches.is_present("header"));
-    let writer: &mut dyn table::Write = &mut writer::AsciiWriter::new(io::stdout());
+    let format = matches.value_of("format").unwrap_or_default();
+    let mut tokens = format.split(":").take(2);
+
+    let mut csv_reader = reader::CsvReader::new(io::stdin(), b',', matches.is_present("header"));
+    let mut tsv_reader = reader::CsvReader::new(io::stdin(), b'\t', matches.is_present("header"));
+    let reader: &mut dyn table::Read = match tokens.next() {
+        Some("csv") => &mut csv_reader,
+        _ => &mut tsv_reader,
+    };
+
+    let mut ascii_writer = writer::AsciiWriter::new(io::stdout());
+    let writer: &mut dyn table::Write = match tokens.next() {
+        _ => &mut ascii_writer,
+    };
+
     let result = reader
         .read()
         .and_then(|table| writer.write(table))
