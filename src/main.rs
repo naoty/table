@@ -1,8 +1,7 @@
 use clap::{crate_version, App, Arg};
-use csv::ReaderBuilder;
 use std::io;
 use std::process;
-use table::{ascii_writer, markdown_writer};
+use table::{reader, writer};
 
 const DESCRIPTION: &str = "A command to print ASCII table from stdin";
 const USAGE_TEMPLATE: &str = r#"
@@ -40,43 +39,21 @@ fn main() {
         )
         .get_matches();
 
-    if let Err(error) = start(
-        matches.value_of("format").unwrap(),
-        matches.is_present("header"),
-    ) {
-        eprintln!("{}", error);
-        process::exit(1);
-    }
-}
+    let reader: &mut dyn table::Read =
+        &mut reader::CsvReader::new(io::stdin(), b',', matches.is_present("header"));
+    let writer: &mut dyn table::Write = &mut writer::AsciiWriter::new(io::stdout());
+    let result = reader
+        .read()
+        .and_then(|table| writer.write(table))
+        .and_then(|_| writer.flush());
 
-fn start(format: &str, has_headers: bool) -> io::Result<()> {
-    let mut reader = ReaderBuilder::new()
-        .delimiter(b'\t')
-        .has_headers(false)
-        .from_reader(io::stdin());
-
-    let tokens = format.split(":").take(2);
-    let mut ascii_writer = ascii_writer::new(io::stdout(), has_headers);
-    let mut markdown_writer = markdown_writer::new(io::stdout());
-    let writer: &mut dyn io::Write = match tokens.last() {
-        Some("markdown") => &mut markdown_writer,
-        _ => &mut ascii_writer,
-    };
-
-    for result in reader.records() {
-        match result {
-            Ok(record) => {
-                for field in record.iter() {
-                    writer.write(field.as_bytes())?;
-                }
-                writer.write(b"\n")?;
-            }
-            Err(error) => {
-                eprintln!("failed to read record: {}", error);
-                process::exit(1);
-            }
+    match result {
+        Ok(_) => {
+            process::exit(0);
+        }
+        Err(error) => {
+            eprintln!("{:?}", error);
+            process::exit(1);
         }
     }
-
-    writer.flush()
 }
