@@ -26,8 +26,8 @@ impl<T: io::Write> crate::Write for AsciiWriter<T> {
       .write(border.as_bytes())
       .map_err(|_| crate::Error::write())?;
 
-    for (i, row) in table.rows.iter().enumerate() {
-      for (j, value) in row.iter().enumerate() {
+    if let Some(headers) = table.headers {
+      for (j, value) in headers.iter().enumerate() {
         let spaces = " ".repeat(column_widths[j] - UnicodeWidthStr::width(value as &str));
         let cell = format!("| {}{} ", value, spaces);
 
@@ -42,12 +42,27 @@ impl<T: io::Write> crate::Write for AsciiWriter<T> {
         .write(b"|\n")
         .map_err(|_| crate::Error::write())?;
 
-      if i == 0 && table.has_headers {
+      self
+        .writer
+        .write(border.as_bytes())
+        .map_err(|_| crate::Error::write())?;
+    }
+
+    for row in table.rows.iter() {
+      for (j, value) in row.iter().enumerate() {
+        let spaces = " ".repeat(column_widths[j] - UnicodeWidthStr::width(value as &str));
+        let cell = format!("| {}{} ", value, spaces);
+
         self
           .writer
-          .write(border.as_bytes())
+          .write(cell.as_bytes())
           .map_err(|_| crate::Error::write())?;
       }
+
+      self
+        .writer
+        .write(b"|\n")
+        .map_err(|_| crate::Error::write())?;
     }
 
     self

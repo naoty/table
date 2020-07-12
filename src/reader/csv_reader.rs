@@ -19,13 +19,17 @@ impl<T: io::Read> CsvReader<T> {
 
 impl<T: io::Read> crate::Read for CsvReader<T> {
   fn read(&mut self) -> Result<crate::Table, crate::Error> {
-    let mut table = crate::Table::with_headers(self.headers);
+    let mut table = crate::Table::new();
 
-    for result in self.reader.records() {
+    for (i, result) in self.reader.records().enumerate() {
       match result {
         Ok(record) => {
           let row: Vec<String> = record.iter().map(|field| String::from(field)).collect();
-          table.push_row(row);
+          if i == 0 && self.headers {
+            table.headers = Some(row);
+          } else {
+            table.push_row(row);
+          }
         }
         Err(_) => {
           return Err(crate::Error {
@@ -51,28 +55,25 @@ mod tests {
       (
         "alice\t80",
         false,
-        crate::Table::from(vec![vec![String::from("alice"), String::from("80")]], false),
+        crate::Table::from(None, vec![vec![String::from("alice"), String::from("80")]]),
       ),
       (
         "alice\t80\nbob\t100",
         false,
         crate::Table::from(
+          None,
           vec![
             vec![String::from("alice"), String::from("80")],
             vec![String::from("bob"), String::from("100")],
           ],
-          false,
         ),
       ),
       (
         "name\tscore\nalice\t80",
         true,
         crate::Table::from(
-          vec![
-            vec![String::from("name"), String::from("score")],
-            vec![String::from("alice"), String::from("80")],
-          ],
-          true,
+          Some(vec![String::from("name"), String::from("score")]),
+          vec![vec![String::from("alice"), String::from("80")]],
         ),
       ),
     ];
