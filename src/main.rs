@@ -43,9 +43,11 @@ fn main() {
     let mut tokens = format.split(":").take(2);
 
     let mut csv_reader = reader::CsvReader::new(io::stdin(), b',', matches.is_present("header"));
+    let mut jsonl_reader = reader::JsonlReader::new(io::stdin());
     let mut tsv_reader = reader::CsvReader::new(io::stdin(), b'\t', matches.is_present("header"));
     let reader: &mut dyn table::Read = match tokens.next() {
         Some("csv") => &mut csv_reader,
+        Some("jsonl") => &mut jsonl_reader,
         _ => &mut tsv_reader,
     };
 
