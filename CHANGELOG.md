@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+* Add jsonl reader.
+
 ## 0.3.0 (2020-07-11)
 
 ### Added
