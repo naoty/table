@@ -9,4 +9,5 @@ edition = "2018"
 [dependencies]
 clap = "~2.27.0"
 csv = "1.1"
+serde_json = "1.0"
 unicode-width = "0.1.7"
