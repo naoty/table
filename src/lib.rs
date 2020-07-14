@@ -1,3 +1,4 @@
+use std::{error, fmt, result};
 use unicode_width::UnicodeWidthStr;
 
 pub mod reader;
@@ -55,39 +56,31 @@ impl Table {
   }
 }
 
-#[derive(Debug)]
-pub struct Error {
-  kind: ErrorKind,
-}
-
-impl Error {
-  pub fn read() -> Error {
-    Error {
-      kind: ErrorKind::Read,
-    }
-  }
-
-  pub fn write() -> Error {
-    Error {
-      kind: ErrorKind::Write,
-    }
-  }
-}
-
-#[derive(Debug)]
-pub enum ErrorKind {
-  Read,
-  Write,
-}
-
 pub trait Read {
-  fn read(&mut self) -> Result<Table, Error>;
+  fn read(&mut self) -> Result<Table>;
 }
 
 pub trait Write {
-  fn write(&mut self, table: Table) -> Result<(), Error>;
-  fn flush(&mut self) -> Result<(), Error>;
+  fn write(&mut self, table: Table) -> Result<()>;
+  fn flush(&mut self) -> Result<()>;
 }
+
+type Result<T> = result::Result<T, Box<dyn error::Error>>;
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum Error {
+  InvalidInput,
+}
+
+impl fmt::Display for Error {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    match self {
+      Error::InvalidInput => write!(f, "invalid input"),
+    }
+  }
+}
+
+impl error::Error for Error {}
 
 mod tests {
   #[test]

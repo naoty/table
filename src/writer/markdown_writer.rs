@@ -12,7 +12,7 @@ impl<T: io::Write> MarkdownWriter<T> {
 }
 
 impl<T: io::Write> crate::Write for MarkdownWriter<T> {
-  fn write(&mut self, table: crate::Table) -> Result<(), crate::Error> {
+  fn write(&mut self, table: crate::Table) -> crate::Result<()> {
     let column_widths = table.column_widths();
 
     let mut border = String::new();
@@ -25,30 +25,21 @@ impl<T: io::Write> crate::Write for MarkdownWriter<T> {
       for (j, value) in row.iter().enumerate() {
         let spaces = " ".repeat(column_widths[j] - UnicodeWidthStr::width(value as &str));
         let cell = format!("| {}{} ", value, spaces);
-
-        self
-          .writer
-          .write(cell.as_bytes())
-          .map_err(|_| crate::Error::write())?;
+        self.writer.write(cell.as_bytes())?;
       }
 
-      self
-        .writer
-        .write(b"|\n")
-        .map_err(|_| crate::Error::write())?;
+      self.writer.write(b"|\n")?;
 
       if i == 0 {
-        self
-          .writer
-          .write(border.as_bytes())
-          .map_err(|_| crate::Error::write())?;
+        self.writer.write(border.as_bytes())?;
       }
     }
 
     Ok(())
   }
 
-  fn flush(&mut self) -> Result<(), crate::Error> {
-    self.writer.flush().map_err(|_| crate::Error::write())
+  fn flush(&mut self) -> crate::Result<()> {
+    self.writer.flush()?;
+    Ok(())
   }
 }

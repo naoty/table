@@ -11,24 +11,18 @@ impl<T: io::Read> JsonlReader<T> {
 }
 
 impl<T: io::Read> crate::Read for JsonlReader<T> {
-  fn read(&mut self) -> Result<crate::Table, crate::Error> {
+  fn read(&mut self) -> crate::Result<crate::Table> {
     let mut table = crate::Table::new();
 
     let mut buffer = String::new();
-    self
-      .reader
-      .read_to_string(&mut buffer)
-      .map_err(|_| crate::Error::read())?;
+    self.reader.read_to_string(&mut buffer)?;
 
     let mut headers: Vec<String> = vec![];
     for line in buffer.split("\n") {
       let mut row: Vec<String> = vec![];
 
-      let json_value: serde_json::Value =
-        serde_json::from_str(line).map_err(|_| crate::Error::read())?;
-
-      // TODO: define a reasonable ErrorKind.
-      let json_object = json_value.as_object().ok_or(crate::Error::read())?;
+      let json_value: serde_json::Value = serde_json::from_str(line)?;
+      let json_object = json_value.as_object().ok_or(crate::Error::InvalidInput)?;
 
       for (key, value) in json_object {
         let index = match headers.iter().position(|header| header == key) {

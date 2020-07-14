@@ -18,24 +18,16 @@ impl<T: io::Read> CsvReader<T> {
 }
 
 impl<T: io::Read> crate::Read for CsvReader<T> {
-  fn read(&mut self) -> Result<crate::Table, crate::Error> {
+  fn read(&mut self) -> crate::Result<crate::Table> {
     let mut table = crate::Table::new();
 
     for (i, result) in self.reader.records().enumerate() {
-      match result {
-        Ok(record) => {
-          let row: Vec<String> = record.iter().map(|field| String::from(field)).collect();
-          if i == 0 && self.headers {
-            table.headers = Some(row);
-          } else {
-            table.push_row(row);
-          }
-        }
-        Err(_) => {
-          return Err(crate::Error {
-            kind: crate::ErrorKind::Read,
-          });
-        }
+      let record = result?;
+      let row: Vec<String> = record.iter().map(|field| String::from(field)).collect();
+      if i == 0 && self.headers {
+        table.headers = Some(row);
+      } else {
+        table.push_row(row);
       }
     }
 
