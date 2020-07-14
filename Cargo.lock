@@ -151,7 +151,7 @@ checksum = "b4d15c810519a91cf877e7e36e63fe068815c678181439f2f29e2562147c3694"
 
 [[package]]
 name = "table"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "clap",
  "csv",

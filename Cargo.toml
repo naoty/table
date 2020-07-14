@@ -1,6 +1,6 @@
 [package]
 name = "table"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Naoto Kaneko <naoty.k@gmail.com>"]
 edition = "2018"
 
